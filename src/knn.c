@@ -1,13 +1,8 @@
 #include "knn.h"
 
-/****************************************************************************/
-/* For all the remaining functions you may assume all the images are of the */
-/*     same size, you do not need to perform checks to ensure this.         */
-/****************************************************************************/
-
-/**************************** A1 code ****************************************/
-
-/* Same as A1, you can reuse your code if you want! */
+/** 
+ * Return the euclidean distance between the image pixels (as vectors).
+ */
 double distance(Image *a, Image *b) {
   int total_pixels = a->sx * a->sy;
   double dist = 0;
@@ -56,7 +51,15 @@ int mode(int* k_label, int K) {
   return max_label;
 }
 
-/* Same as A1, you can reuse your code if you want! */
+/**
+ * Given the input training dataset, an image to classify and K,
+ *   (1) Find the K most similar images to `input` in the dataset
+ *   (2) Return the most frequent label of these K images
+ * 
+ * Note: If there's multiple images with the same smallest values, pick the
+ *      ones that come first. For automarking we will make sure the K smallest
+ *      ones are unique, so it doesn't really matter.
+ */ 
 int knn_predict(Dataset *data, Image *input, int K) {
   // Find min length
   int min_length;
@@ -88,9 +91,20 @@ int knn_predict(Dataset *data, Image *input, int K) {
   return mode(k_label, min_length);
 }
 
-/**************************** A2 code ****************************************/
-
-/* Same as A2, you can reuse your code if you want! */
+/**
+ * This function takes in the name of the binary file containing the data and
+ * loads it into memory. The binary file format consists of the following:
+ *
+ *     -   4 bytes : `N`: Number of images / labels in the file
+ *     -   1 byte  : Image 1 label
+ *     - 784 bytes : Image 1 data (28x28)
+ *          ...
+ *     -   1 byte  : Image N label
+ *     - 784 bytes : Image N data (28x28)
+ *
+ * You can simply set the `sx` and `sy` values for all the images to 28, we
+ * will not test this with different image sizes.
+ */
 Dataset *load_dataset(const char *filename) {
   int image_dimension = 28;
   int total_pixels = 28 * 28;
@@ -125,7 +139,9 @@ Dataset *load_dataset(const char *filename) {
   return data_set;
 }
 
-/* Same as A2, you can reuse your code if you want! */
+/**
+ * Free all the allocated memory for the dataset
+ */
 void free_dataset(Dataset *data) {
   for(int i = 0; i < data->num_items; i++) {
     free(data->images[i].data);
@@ -135,18 +151,6 @@ void free_dataset(Dataset *data) {
   free(data);
   return;
 }
-
-/************************** A3 Code below *************************************/
-
-/**
- * NOTE ON AUTOTESTING:
- *    For the purposes of testing your A3 code, the actual KNN stuff doesn't
- *    really matter. We will simply be checking if (i) the number of children
- *    are being spawned correctly, and (ii) if each child is recieving the 
- *    expected parameters / input through the pipe / sending back the correct
- *    result. If your A1 code didn't work, then this is not a problem as long
- *    as your program doesn't crash because of it
- */
 
 /**
  * This function should be called by each child process, and is where the 
